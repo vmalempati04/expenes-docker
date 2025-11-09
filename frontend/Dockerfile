@@ -5,7 +5,7 @@ WORKDIR /usr/share/nginx/html
 RUN rm -rf ./*
 
 # Copy your React build output to nginx html folder
-COPY build/ .   # 👈 make sure you've run "npm run build" first
+COPY build/ .   #  make sure you've run "npm run build" first
 
 # Optionally copy your own nginx.conf
 COPY nginx.conf /etc/nginx/nginx.conf
