@@ -1,14 +1,24 @@
-FROM nginx:alpine
-WORKDIR /usr/share/nginx/html
+#FROM nginx
+FROM nginx:stable-alpine3.20-perl
+RUN rm -rf /usr/share/nginx/html/index.html
+RUN rm -rf /etc/nginx/nginx.conf
+RUN rm -rf /etc/nginx/conf.d/default.conf
+RUN mkdir -p /var/cache/nginx/client_temp && \
+        mkdir -p /var/cache/nginx/proxy_temp && \
+        mkdir -p /var/cache/nginx/fastcgi_temp && \
+        mkdir -p /var/cache/nginx/uwsgi_temp && \
+        mkdir -p /var/cache/nginx/scgi_temp && \
+        chown -R nginx:nginx /var/cache/nginx && \
+        chown -R nginx:nginx /etc/nginx/ && \
+        chmod -R 755 /etc/nginx/ && \
+        chown -R nginx:nginx /var/log/nginx
 
-# Remove default files
-RUN rm -rf ./*
+RUN mkdir -p /etc/nginx/ssl/ && \
+    chown -R nginx:nginx /etc/nginx/ssl/ && \
+    chmod -R 755 /etc/nginx/ssl/
 
-# Copy your React build output to nginx html folder
-COPY build/ .   # make sure you've run "npm run build" first
-
-# Optionally copy your own nginx.conf
+RUN touch /var/run/nginx.pid && \
+    chown -R nginx:nginx /var/run/nginx.pid /run/nginx.pid
 COPY nginx.conf /etc/nginx/nginx.conf
-
-EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
+COPY code /usr/share/nginx/html/
+USER nginx
